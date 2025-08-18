@@ -1,0 +1,18 @@
+# Ignore Python environment and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+ENV/
+.env
+
+# Ignore SQLite DBs if you want (uncomment if needed)
+# backend/gallery.db
+# backend/WordsTogether.db
+
+# Ignore uploads
+backend/static/uploads/
+
+# Ignore VS Code settings
+.vscode/

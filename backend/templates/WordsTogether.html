@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Words Together</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Sophisticated Smooth Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{{ url_for('homepage') }}" class="navbar-logo">Couple center</a>
+            <ul class="navbar-menu">
+                <li><a href="{{ url_for('homepage') }}">Home</a></li>
+                <li><a href="{{ url_for('words_together') }}" class="active">Words To Each Other</a></li>
+                <li><a href="{{ url_for('gallery') }}">Our Gallery</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#about">About Us</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h2 class="mb-4">Share Your Words</h2>
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <form method="POST" class="mb-4">
+            <div class="mb-3">
+                <textarea name="text" class="form-control" rows="3" placeholder="Write something to share..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="background: linear-gradient(90deg, #ff6a88 0%, #ffb86c 100%); border: none;">Share</button>
+        </form>
+        <h4>Recent Shared Words</h4>
+        <ul class="list-group mb-4">
+            {% for word in words %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ word[1] }}</span>
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="delete_id" value="{{ word[0] }}">
+                    <button type="submit" class="btn btn-sm btn-primary" style="background: linear-gradient(90deg, #ff6a88 0%, #ffb86c 100%); border: none;">Delete</button>
+                </form>
+            </li>
+            {% else %}
+            <li class="list-group-item">No words shared yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

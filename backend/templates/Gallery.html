@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gallery</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<nav class="navbar">
+	<div class="navbar-container">
+		<a href="#" class="navbar-logo">Couple Center</a>
+		<ul class="navbar-menu">
+			<li><a href="{{ url_for('homepage') }}">Home</a></li>
+			<li><a href="{{ url_for('words_together') }}">Words To Each Other</a></li>
+			<li><a href="{{ url_for('gallery') }}">Our Gallery</a></li>
+			<li><a href="#contact">Contact</a></li>
+			<li><a href="#about">About Us</a></li>
+		</ul>
+	</div>
+</nav>
+
+<div class="container mt-5">
+	<h1 class="mb-4 fw-bold display-4" style="font-weight:900;">Our Gallery</h1>
+	<!-- Upload Form -->
+	<form method="POST" enctype="multipart/form-data" class="mb-5">
+		<div class="mb-3">
+			<label for="image" class="form-label">Upload a picture</label>
+			<input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+		</div>
+		<div class="mb-3">
+			<label for="note" class="form-label">Note for this picture</label>
+			<input type="text" class="form-control" id="note" name="note" maxlength="100" required>
+		</div>
+		<button type="submit" class="btn btn-success">Upload</button>
+	</form>
+
+	<!-- Gallery Grid -->
+	<div class="row" id="gallery">
+		{% for id, filename, note in images %}
+		<div class="col-md-4 mb-4">
+			<div class="card gallery-card position-relative">
+				<img src="{{ url_for('static', filename='uploads/' ~ filename) }}" class="card-img-top" alt="...">
+				<div class="card-body">
+					<div class="gallery-note position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background:rgba(255,255,255,0.85); opacity:0; transition:opacity 0.3s;">
+						<span class="fw-bold">{{ note }}</span>
+					</div>
+					<form method="POST" style="position:absolute; top:10px; right:10px;">
+						<input type="hidden" name="delete_id" value="{{ id }}">
+						<button type="submit" class="btn btn-danger btn-sm">Delete</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+
+<script>
+// Show note on hover (flashcard effect)
+document.querySelectorAll('.gallery-card').forEach(function(card) {
+	card.addEventListener('mouseenter', function() {
+		card.querySelector('.gallery-note').style.opacity = 1;
+	});
+	card.addEventListener('mouseleave', function() {
+		card.querySelector('.gallery-note').style.opacity = 0;
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+We can use   Flask Dance to connect  with  Google   
+here is  the step 
+********************************
+
+Go to https://console.cloud.google.com/
+Create a new project (if needed).
+Go to “APIs & Services” > “Credentials”.
+Click “Create Credentials” > “OAuth client ID”.
+Choose “Web application”.
+Set “Authorized redirect URIs” to: http://localhost:5000/login/google/authorized
+Save your Client ID and Client Secret.
+
+
+
+Logic for Gallery  
+Here’s a plan for your gallery upload logic:
+
+Set up a lightweight database
+
+Use SQLite (built-in with Python) to store image filenames and notes.
+Configure Flask to handle file uploads
+
+Set an upload folder and allowed file types.
+Limit uploads to 10 images per user/session.
+Update your /gallery endpoint
+
+On POST: Save the image to disk, store filename and note in the database, and enforce the 10-image limit.
+On GET: Query the database and display all saved images and notes.
+Update your template to show uploaded images and notes
+
+Loop through images from the database and render them as flashcards.
+Would you like to start with the database setup and Flask upload configuration? I can generate the code for you!

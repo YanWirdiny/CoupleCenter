@@ -1,0 +1,139 @@
+body {
+    background-color: #ffffff;
+    font-family: St, sans-serif;
+}
+
+h1 {
+    color: #ff6a88;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-success {
+    background: linear-gradient(90deg, #ff6a88 0%, #ffb86c 100%);
+    border-color: #28a745;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+/* Custom Navbar Styles */
+.navbar {
+    background: linear-gradient(90deg, #ff6a88 0%, #ffb86c 100%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 0.5rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    transition: background 0.4s;
+}
+.navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+}
+.navbar-logo {
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: 2px;
+    transition: color 0.3s;
+}
+.navbar-logo:hover {
+    color: #222;
+}
+.navbar-menu {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+.navbar-menu li {
+    position: relative;
+}
+.navbar-menu a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    transition: background 0.3s, color 0.3s;
+}
+.navbar-menu a:hover {
+    background: rgba(255,255,255,0.2);
+    color: #222;
+}
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 1rem;
+    }
+    .navbar-menu {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+    }
+    .navbar-menu a {
+        width: 100%;
+        display: block;
+    }
+}
+
+/* Rain of Hearts Animation */
+.hearts-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+.heart {
+    position: absolute;
+    top: -50px;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(90deg, #ff6a88 0%, #ffb86c 100%);
+    clip-path: path('M20 35 Q0 15 20 5 Q40 15 20 35 Z');
+    opacity: 0.85;
+    animation: heart-fall linear infinite;
+}
+/* Varied sizes */
+.heart.size-sm { width: 20px; height: 20px; }
+.heart.size-md { width: 30px; height: 30px; }
+.heart.size-lg { width: 50px; height: 50px; }
+.heart.size-xl { width: 70px; height: 70px; }
+
+@keyframes heart-fall {
+    0% {
+        transform: translateY(-60px) scale(1) rotate(0deg);
+        opacity: 0.85;
+    }
+    80% {
+        opacity: 0.85;
+    }
+    100% {
+        transform: translateY(100vh) scale(1) rotate(360deg);
+        opacity: 0.2;
+    }
+}

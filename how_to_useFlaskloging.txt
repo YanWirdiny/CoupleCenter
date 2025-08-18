@@ -1,0 +1,36 @@
+Install Flask-Login and dependencies
+
+Add Flask-Login to your project (and Flask-Bcrypt for password hashing).
+Set up a User model
+
+Create a user table in your database (SQLite for MVP).
+Define a User class with required Flask-Login methods.
+Configure Flask-Login
+
+Initialize Flask-Login in your app.
+Set up user loader and login manager.
+Create registration and login forms
+
+Build HTML forms for user registration and login.
+Validate and process form data.
+Implement registration logic
+
+Hash passwords and store new users in the database.
+Implement login logic
+
+Verify credentials, log users in, and manage sessions.
+Protect routes
+
+Restrict access to certain pages for logged-in users only.
+Add logout functionality
+
+Allow users to log out and clear their session.
+Add user feedback
+
+Show error messages, success notifications, and login status.
+Test the system
+
+Manually test registration, login, logout, and protected routes.
+(Optional) Add password reset and remember-me
+
+Implement password reset and persistent login if needed.
