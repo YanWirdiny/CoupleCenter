@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, session, abort
 from flask_cors import CORS
 from flask_dance.contrib.google import make_google_blueprint, google
 import os   
@@ -91,15 +91,30 @@ def delete_image(image_id):
         conn.commit()
     conn.close()
 
+
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)  # Generate a random secret key
 CORS(app)  # Enable CORS for cross-origin requests
 
+# Helper: login_required decorator
+def login_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("google_oauth_token"):
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated_function
+
 google_bp = make_google_blueprint(
     client_id=os.getenv("Client_ID"),
     client_secret=os.getenv("Client_Secret"),
-    redirect_to="homepage",  # or any route you want after login # need  to be an homepage() not url 
-    scope=["profile", "email"]
+    redirect_to="ask_girlfriend",
+    scope=[
+        "openid",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/userinfo.email"
+    ]
 )
 app.register_blueprint(google_bp, url_prefix="/login")
 
@@ -122,11 +137,13 @@ app.register_blueprint(google_bp, url_prefix="/login")
 
 # Homepage endpoint
 @app.route('/')
+@login_required
 def homepage():
     return render_template('index.html')  # Serve the homepage template
 
 # "Will You Be My Girlfriend" endpoint
 @app.route('/ask-girl', methods=['GET', 'POST'])
+@login_required
 def ask_girlfriend():
     if request.method == 'POST':
         answer = request.form.get('answer')
@@ -147,6 +164,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/gallery', methods=['GET', 'POST'])
+@login_required
 def gallery():
     error = None
     if request.method == 'POST':
@@ -172,6 +190,7 @@ def gallery():
 
 # WordsTogether text sharing route
 @app.route('/words-together', methods=['GET', 'POST'])
+@login_required
 def words_together():
     error = None
     if request.method == 'POST':
@@ -192,10 +211,20 @@ def login():
     return redirect(url_for("google.login"))
 
 @app.route("/profile")
+@login_required
 def profile():
     resp = google.get("/oauth2/v2/userinfo")
     assert resp.ok, resp.text
     return resp.json()
+
+# Logout route for Google OAuth
+@app.route("/logout")
+def logout():
+    # Remove the OAuth token from the session
+    if "google_oauth_token" in session:
+        del session["google_oauth_token"]
+    session.clear()  # Clear all session data
+    return redirect(url_for("login"))
 
 
 if __name__ == '__main__':
