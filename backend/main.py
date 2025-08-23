@@ -101,10 +101,16 @@ def login_required(f):
     from functools import wraps
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Only redirect if NOT logged in
         if not session.get("google_oauth_token"):
-            return redirect(url_for("login"))
+            return redirect(url_for("errorLogin"))
         return f(*args, **kwargs)
     return decorated_function
+
+# Error login route
+@app.route("/errorLogin")
+def errorLogin():
+    return render_template("errorLogin.html")
 
 google_bp = make_google_blueprint(
     client_id=os.getenv("Client_ID"),
@@ -137,7 +143,6 @@ app.register_blueprint(google_bp, url_prefix="/login")
 
 # Homepage endpoint
 @app.route('/')
-@login_required
 def homepage():
     return render_template('index.html')  # Serve the homepage template
 
@@ -224,7 +229,7 @@ def logout():
     if "google_oauth_token" in session:
         del session["google_oauth_token"]
     session.clear()  # Clear all session data
-    return redirect(url_for("login"))
+    return redirect(url_for("homepage"))  # Redirect to homepage after logout
 
 
 if __name__ == '__main__':
