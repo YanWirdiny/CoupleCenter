@@ -10,17 +10,17 @@
 <body>
     <nav class="navbar navbar-expand-lg">
     <div class="navbar-container w-100">
-        <a href="#" class="navbar-logo">Couple Center</a>
+        <a href="#" class="navbar-logo">Couple center </a>
         <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse w-100" id="navbarNav">
             <ul class="navbar-menu w-100">
                 <li><a href="{{ url_for('homepage') }}">Home</a></li>
+                <li><a href="{{ url_for('words_together') }}">Words To Each Other</a></li>
                 <li><a href="{{ url_for('gallery') }}">Our Gallery</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('partner_management') }}">Partner Management</a></li>
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             </ul>
         </div>

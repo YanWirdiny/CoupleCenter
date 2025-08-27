@@ -11,29 +11,33 @@ import sqlite3
 WORDS_DB_PATH = os.path.join(os.path.dirname(__file__), 'WordsTogether.db')
 
 def init_words_db():
-    conn = sqlite3.connect(WORDS_DB_PATH)
+    conn = sqlite3.connect('WordsTogether.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS words (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        text TEXT NOT NULL
-    )''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS words (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            text TEXT NOT NULL,
+            couple_id INTEGER,
+            FOREIGN KEY (couple_id) REFERENCES couples(id)
+        )
+    ''')
     conn.commit()
     conn.close()
 
 init_words_db()  # Initialize WordsTogether DB on startup
 
-def get_words():
+def get_words(couple_id):
     conn = sqlite3.connect(WORDS_DB_PATH)
     c = conn.cursor()
-    c.execute('SELECT id, text FROM words ORDER BY id DESC LIMIT 20')
+    c.execute('SELECT id, text FROM words WHERE couple_id=? ORDER BY id DESC LIMIT 20', (couple_id,))
     words = c.fetchall()
     conn.close()
     return words
 
-def add_word(text):
+def add_word(text, couple_id):
     conn = sqlite3.connect(WORDS_DB_PATH)
     c = conn.cursor()
-    c.execute('INSERT INTO words (text) VALUES (?)', (text,))
+    c.execute('INSERT INTO words (text, couple_id) VALUES (?, ?)', (text, couple_id))
     conn.commit()
     conn.close()
 
@@ -50,30 +54,34 @@ import sqlite3
 DB_PATH = os.path.join(os.path.dirname(__file__), 'gallery.db')
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect('gallery.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS images (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        filename TEXT NOT NULL,
-        note TEXT NOT NULL
-    )''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS images (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename TEXT NOT NULL,
+            note TEXT,
+            couple_id INTEGER,
+            FOREIGN KEY (couple_id) REFERENCES couples(id)
+        )
+    ''')
     conn.commit()
     conn.close()
 
 init_db()  # Initialize DB on startup
 
-def get_images():
+def get_images(couple_id):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('SELECT id, filename, note FROM images ORDER BY id DESC LIMIT 10')
+    c.execute('SELECT id, filename, note FROM images WHERE couple_id=? ORDER BY id DESC LIMIT 10', (couple_id,))
     images = c.fetchall()
     conn.close()
     return images
 
-def add_image(filename, note):
+def add_image(filename, note, couple_id):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('INSERT INTO images (filename, note) VALUES (?, ?)', (filename, note))
+    c.execute('INSERT INTO images (filename, note, couple_id) VALUES (?, ?, ?)', (filename, note, couple_id))
     conn.commit()
     conn.close()
 
@@ -115,7 +123,7 @@ def errorLogin():
 google_bp = make_google_blueprint(
     client_id=os.getenv("Client_ID"),
     client_secret=os.getenv("Client_Secret"),
-    redirect_to="ask_girlfriend",
+    redirect_to="homepage",
     scope=[
         "openid",
         "https://www.googleapis.com/auth/userinfo.profile",
@@ -144,7 +152,49 @@ app.register_blueprint(google_bp, url_prefix="/login")
 # Homepage endpoint
 @app.route('/')
 def homepage():
-    return render_template('index.html')  # Serve the homepage template
+    logged_in = bool(session.get("google_oauth_token"))
+    if logged_in and not session.get('couple_id'):
+        # Get user info from Google
+        resp = google.get("/oauth2/v2/userinfo")
+        email = resp.json().get("email")
+        couple_id = get_or_create_couple(email)
+        session['couple_id'] = couple_id
+        session['user_email'] = email
+
+    couple_id = session.get('couple_id')
+    partner_email = None
+    if couple_id:
+        conn = sqlite3.connect('couples.db')
+        c = conn.cursor()
+        c.execute('SELECT user2_email FROM couples WHERE id=?', (couple_id,))
+        row = c.fetchone()
+        partner_email = row[0] if row and row[0] else None
+        conn.close()
+
+    features = [
+        {
+            "title": "Gallery",
+            "desc": "Upload and view pictures with notes as flashcards.",
+            "link": url_for('gallery')
+        },
+        {
+            "title": "Words Together",
+            "desc": "Share and view messages with your partner.",
+            "link": url_for('words_together')
+        },
+        {
+            "title": "Ask Girlfriend",
+            "desc": "A playful way to ask and answer relationship questions.",
+            "link": url_for('ask_girlfriend')
+        }
+    ]
+    return render_template(
+        'index.html',
+        logged_in=logged_in,
+        features=features,
+        partner_email=partner_email,
+        couple_id=couple_id
+    )
 
 # "Will You Be My Girlfriend" endpoint
 @app.route('/ask-girl', methods=['GET', 'POST'])
@@ -172,11 +222,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @login_required
 def gallery():
     error = None
+    couple_id = session.get('couple_id')
     if request.method == 'POST':
         if 'delete_id' in request.form:
             delete_image(request.form['delete_id'])
             return redirect(url_for('gallery'))
-        images = get_images()
+        images = get_images(couple_id)
         if len(images) >= 10:
             error = 'Maximum of 10 images allowed.'
         else:
@@ -186,11 +237,11 @@ def gallery():
                 filename = secrets.token_hex(8) + '_' + file.filename
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(filepath)
-                add_image(filename, note)
+                add_image(filename, note, couple_id)
                 return redirect(url_for('gallery'))
             else:
                 error = 'Invalid file type.'
-    images = get_images()
+    images = get_images(couple_id)
     return render_template('Gallery.html', images=images, error=error)
 
 # WordsTogether text sharing route
@@ -198,17 +249,18 @@ def gallery():
 @login_required
 def words_together():
     error = None
+    couple_id = session.get('couple_id')
     if request.method == 'POST':
         if 'delete_id' in request.form:
             delete_word(request.form['delete_id'])
             return redirect(url_for('words_together'))
         text = request.form.get('text')
         if text and len(text.strip()) > 0:
-            add_word(text.strip())
+            add_word(text.strip(), couple_id)
             return redirect(url_for('words_together'))
         else:
             error = 'Text cannot be empty.'
-    words = get_words()
+    words = get_words(couple_id)
     return render_template('WordsTogether.html', words=words, error=error)
 
 @app.route("/login")
@@ -219,8 +271,26 @@ def login():
 @login_required
 def profile():
     resp = google.get("/oauth2/v2/userinfo")
-    assert resp.ok, resp.text
-    return resp.json()
+    email = resp.json().get("email")
+    couple_id = get_or_create_couple(email)
+    session['couple_id'] = couple_id
+    session['user_email'] = email
+
+    # Get partner info from DB
+    conn = sqlite3.connect('couples.db')
+    c = conn.cursor()
+    c.execute('SELECT user1_email, user2_email FROM couples WHERE id=?', (couple_id,))
+    row = c.fetchone()
+    conn.close()
+    user1_email, user2_email = row if row else (None, None)
+
+    return render_template(
+        "profile.html",
+        user_email=email,
+        user1_email=user1_email,
+        user2_email=user2_email,
+        couple_id=couple_id
+    )
 
 # Logout route for Google OAuth
 @app.route("/logout")
@@ -231,6 +301,114 @@ def logout():
     session.clear()  # Clear all session data
     return redirect(url_for("homepage"))  # Redirect to homepage after logout
 
+# --- Couples database setup ---
+def init_couples_db():
+    conn = sqlite3.connect('couples.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS couples (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user1_email TEXT NOT NULL,
+            user2_email TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-if __name__ == '__main__':
+# Call this function at startup
+init_couples_db()
+
+def get_or_create_couple(email):
+    conn = sqlite3.connect('couples.db')
+    c = conn.cursor()
+    # Check if email is already user1 or user2
+    c.execute('SELECT id FROM couples WHERE user1_email=? OR user2_email=?', (email, email))
+    row = c.fetchone()
+    if row:
+        couple_id = row[0]
+    else:
+        # Create new couple with user1_email
+        c.execute('INSERT INTO couples (user1_email) VALUES (?)', (email,))
+        couple_id = c.lastrowid
+        conn.commit()
+    conn.close()
+    return couple_id
+
+def add_partner_to_couple(couple_id, partner_email):
+    conn = sqlite3.connect('couples.db')
+    c = conn.cursor()
+    c.execute('UPDATE couples SET user2_email=? WHERE id=?', (partner_email, couple_id))
+    conn.commit()
+    conn.close()
+
+# --- Database migration to add couple_id to words table ---
+def update_partner_session(couple_id):
+    conn = sqlite3.connect('couples.db')
+    c = conn.cursor()
+    c.execute('SELECT user2_email FROM couples WHERE id=?', (couple_id,))
+    row = c.fetchone()
+    session['partner_email'] = row[0] if row and row[0] else None
+    conn.close()
+
+@app.route('/add-partner', methods=['POST'])
+@login_required
+def add_partner():
+    partner_email = request.form.get('partner_email')
+    couple_id = session.get('couple_id')
+    if couple_id and partner_email:
+        add_partner_to_couple(couple_id, partner_email)
+        session['partner_email'] = partner_email  # <-- Set in session for template logic
+    return redirect(url_for('homepage'))
+
+@app.route('/partner-management', methods=['GET', 'POST'])
+@login_required
+def partner_management():
+    couple_id = session.get('couple_id')
+    user_email = session.get('user_email')
+    partner_email = None
+
+    # Fetch partner email from DB
+    conn = sqlite3.connect('couples.db')
+    c = conn.cursor()
+    c.execute('SELECT user1_email, user2_email FROM couples WHERE id=?', (couple_id,))
+    row = c.fetchone()
+    conn.close()
+    user1_email, user2_email = row if row else (None, None)
+    if user_email == user1_email:
+        partner_email = user2_email
+    else:
+        partner_email = user1_email
+
+    # Remove partner logic
+    if request.method == 'POST' and 'remove_partner' in request.form:
+        # Delete all shared data
+        conn = sqlite3.connect('gallery.db')
+        c = conn.cursor()
+        c.execute('DELETE FROM images WHERE couple_id=?', (couple_id,))
+        conn.commit()
+        conn.close()
+
+        conn = sqlite3.connect('WordsTogether.db')
+        c = conn.cursor()
+        c.execute('DELETE FROM words WHERE couple_id=?', (couple_id,))
+        conn.commit()
+        conn.close()
+
+        # Remove partner from couples table
+        conn = sqlite3.connect('couples.db')
+        c = conn.cursor()
+        c.execute('UPDATE couples SET user2_email=NULL WHERE id=?', (couple_id,))
+        conn.commit()
+        conn.close()
+        session['partner_email'] = None
+        return redirect(url_for('partner_management'))
+
+    return render_template(
+        'partner_management.html',
+        user_email=user_email,
+        partner_email=partner_email,
+        couple_id=couple_id
+    )
+
+if __name__ == "__main__":
     app.run(debug=True)

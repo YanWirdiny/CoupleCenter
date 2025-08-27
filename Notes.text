@@ -30,3 +30,57 @@ Update your template to show uploaded images and notes
 
 Loop through images from the database and render them as flashcards.
 Would you like to start with the database setup and Flask upload configuration? I can generate the code for you!
+
+
+
+
+08/24/2025
+Run code oh HTTP with  Google  Oauth  BleuPrint 
+$env:OAUTHLIB_INSECURE_TRANSPORT = "1"
+python main.py
+
+Create  a logic to  allow two google account to access the same web sessions 
+**************************************************************************
+Concept
+Allow two Google accounts to be linked to one couple’s app session.
+Both users can log in with their own Google accounts, but see and interact with the same shared data (gallery, words, etc.).
+How to Implement
+1. Database Design
+Add a table for couples:
+Link gallery and words entries to a couple’s id.
+2. Authentication Flow
+On first login, save the Google account as user1_email and create a couple record.
+Provide an option for user1 to invite or add user2 (second Google account).
+When user2 logs in, link their email as user2_email in the same couple record.
+3. Session Management
+Store the couple’s id in the session after login.
+When either user logs in, load and display shared data for that couple.
+4. UI/UX
+After login, show a prompt or button: “Add your partner’s Google account.”
+When both accounts are linked, show both emails in the UI.
+5. Access Control
+Only allow access to shared features if the logged-in Google account matches either user1_email or user2_email for the couple.
+Learning Points
+You’ll learn about multi-user session management, relational database design, and secure authentication.
+You’ll practice linking multiple OAuth accounts to a single logical entity (the couple).
+
+
+#UPDATES 08-27-2025
+*********************************************
+
+I update the logic of adding someone  as partner  now i need to test  it to see if it works 
+
+Few Issues   that i need to deal  with 
+- Be able to save  the partner email even when you log out 
+- Create   a  /partner-management endpoint to allow you to see   your  partner  and to allow you  to remove the partner 
+- When removing the partner it will  also  tell you that action will  delete  the  notes and gallery and other  shared things saved on the website 
+- /partner-management allow you to add a new partner if  there is no partner 
+
+Features to add 
+- Updates /profile UI and information  showed 
+- allow  it to be accessible from navbar 
+
+Test partner features
+
+Logic problem "Triangle LOVE"
+- If someone add you  and you add someone else  
