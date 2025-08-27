@@ -84,3 +84,17 @@ Test partner features
 
 Logic problem "Triangle LOVE"
 - If someone add you  and you add someone else  
+
+#UPDATES 08-27-2025 
+***************************************************************************************************************************************************
+Code works well in prod 
+
+Features to be added 
+###################
+-When adding a partner  we need to  add an Acceptation/Refusal option via email  to the partner  
+-Updates code so that    if two people have a partner a;ready you can not add them.
+-Create the invitation features allowing you  to utilize  AI   to create a JPEG card that  and will be sent  to your partners mail (Best way to leverage AI)
+- Create a Russian Roulette  Game   that will suggest activities to do. 
+
+UPDATE UI  for Phone
+Make  it  more  Dynamic for PC and  laptops. 
