@@ -17,14 +17,26 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse w-100" id="navbarNav">
-            <ul class="navbar-menu w-100">
-                <li><a href="{{ url_for('homepage') }}">Home</a></li>
-                <li><a href="{{ url_for('words_together') }}">Words To Each Other</a></li>
-                <li><a href="{{ url_for('gallery') }}">Our Gallery</a></li>
-                <li><a href="{{ url_for('profile') }}">Profile</a></li>
-                <li><a href="{{ url_for('partner_management') }}">Partner Management</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
-            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('homepage') }}">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('words_together') }}">Words To Each Other</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('gallery') }}">Our Gallery</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('partner_management') }}">Partner Management</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link fw-normal" href="#" data-bs-toggle="modal" data-bs-target="#questionModal">Question</a>
+    </li>
+</ul>
         </div>
     </div>
 </nav>
@@ -92,6 +104,22 @@
           <input type="email" name="partner_email" class="form-control mb-2" placeholder="Partner's Google Email" required>
           <button type="submit" class="btn btn-primary" style="background: linear-gradient(90deg, #ff6a88 0%, #ffb86c 100%); border: none;">Add Partner</button>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+    <!-- The Question Modal -->
+<div class="modal fade" id="questionModal" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="questionModalLabel" style="color:#ff6a88;">Ask The Question</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="mb-3">Choose who you want to ask:</p>
+        <a href="{{ url_for('ask_girlfriend') }}" class="btn btn-success btn-lg me-2">Ask Girlfriend</a>
+        <a href="{{ url_for('ask_boyfriend') }}" class="btn btn-success btn-lg ms-2">Ask Boyfriend</a>
       </div>
     </div>
   </div>

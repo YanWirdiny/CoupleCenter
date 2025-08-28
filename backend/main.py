@@ -182,11 +182,7 @@ def homepage():
             "desc": "Share and view messages with your partner.",
             "link": url_for('words_together')
         },
-        {
-            "title": "Ask Girlfriend",
-            "desc": "A playful way to ask and answer relationship questions.",
-            "link": url_for('ask_girlfriend')
-        }
+      
     ]
     return render_template(
         'index.html',
@@ -200,16 +196,37 @@ def homepage():
 @app.route('/ask-girl', methods=['GET', 'POST'])
 @login_required
 def ask_girlfriend():
+    show_animation = False
+    response = None
     if request.method == 'POST':
         answer = request.form.get('answer')
         if answer == 'yes':
             response = "Congratulations! She said YES! 🎉"
+            show_animation = True
         elif answer == 'no':
             response = "Sorry, she said NO. 😢"
         else:
             response = "Invalid response."
-        return render_template('ask_girlfriend.html', response=response)
-    return render_template('ask_girlfriend.html')  # Serve the form template
+        return render_template('ask_girlfriend.html', response=response, show_animation=show_animation)
+    return render_template('ask_girlfriend.html', response=response, show_animation=show_animation)
+
+# "Will You Be My Boyfriend" endpoint
+@app.route('/ask-boyfriend', methods=['GET', 'POST'])
+@login_required
+def ask_boyfriend():
+    show_animation = False
+    response = None
+    if request.method == 'POST':
+        answer = request.form.get('answer')
+        if answer == 'yes':
+            response = "Congratulations! He said YES! 🎉"
+            show_animation = True
+        elif answer == 'no':
+            response = "Sorry, he said NO. 😢"
+        else:
+            response = "Invalid response."
+        return render_template('ask_boyfriend.html', response=response, show_animation=show_animation)
+    return render_template('ask_boyfriend.html', response=response, show_animation=show_animation)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
