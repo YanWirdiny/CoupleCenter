@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Couple Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<div class="hearts-bg"></div>
+<!-- Background music -->
+<audio id="bg-music" src="{{ url_for('static', filename='ressources/i-am-waiting-sad-slow-piano-music-309029.mp3') }}" loop></audio>
+<!-- Sophisticated Smooth Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-container w-100">
+        <a href="#" class="navbar-logo">Couple center </a>
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse w-100" id="navbarNav">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('homepage') }}">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('words_together') }}">Words To Each Other</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('gallery') }}">Our Gallery</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('partner_management') }}">Partner Management</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link fw-normal" href="#" data-bs-toggle="modal" data-bs-target="#questionModal">Question</a>
+    </li>
+</ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-5">
+    <h2 class="mb-4">Our Story</h2>
+    <div class="card rounded-4 shadow p-4">
+        <p>{{ story_text }}</p>
+    </div>
+    <div class="text-center mt-3">
+        <a href="{{ url_for('ask_girlfriend') }}" class="btn btn-secondary">When you ready press this button</a>
+    </div>
+    <!-- Small round play/pause button -->
+    <button id="audio-toggle" class="btn btn-theme-audio" aria-label="Play/Pause Music">
+        <span id="audio-icon">&#9658;</span>
+    </button>
+</div>   
+<script>
+    // Letter-by-letter animation
+    const storyText = document.querySelector('.card p');
+    const fullText = storyText.textContent;
+    storyText.textContent = '';
+    let index = 0;
+    function typeLetter() {
+        if (index < fullText.length) {
+            storyText.textContent += fullText.charAt(index);
+            index++;
+            setTimeout(typeLetter, 50);
+        }
+    }
+    typeLetter();
+
+    // Play/pause audio button
+    const audio = document.getElementById('bg-music');
+    const audioToggle = document.getElementById('audio-toggle');
+    const audioIcon = document.getElementById('audio-icon');
+    let isPlaying = false;
+
+    audioToggle.addEventListener('click', function() {
+        if (audio.paused) {
+            audio.play();
+            audioIcon.innerHTML = '&#10073;&#10073;'; // Pause icon
+            isPlaying = true;
+        } else {
+            audio.pause();
+            audioIcon.innerHTML = '&#9658;'; // Play icon
+            isPlaying = false;
+        }
+    });
+
+    // Optional: update icon if audio ends
+    audio.addEventListener('ended', function() {
+        audioIcon.innerHTML = '&#9658;';
+        isPlaying = false;
+    });
+</script>
+<style>
+.btn-theme-audio {
+    background-color: #e75480; /* Example theme color */
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+.btn-theme-audio:hover {
+    opacity: 1;
+}
+</style>
+<!--

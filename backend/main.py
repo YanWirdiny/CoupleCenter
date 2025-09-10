@@ -4,6 +4,8 @@ from flask_dance.contrib.google import make_google_blueprint, google
 import os   
 from dotenv import load_dotenv
 import secrets
+import replicate
+
 load_dotenv()  # Load environment variables from .env file
 # --- SQLite setup for WordsTogether (text sharing) ---
 import sqlite3
@@ -426,6 +428,41 @@ def partner_management():
         partner_email=partner_email,
         couple_id=couple_id
     )
+
+# route for OurStory page
+@app.route('/our-story', methods=['GET', 'POST'])
+@login_required
+def our_story():
+    # Simple hardcoded story text for demonstration
+    story_text = ("Once upon a time, in a world full of possibilities, two souls met and embarked on a journey of love and companionship. "
+                  "Through laughter and tears, adventures and quiet moments, their bond grew stronger each day. "
+                  "This is their story, a testament to the power of love and the magic of togetherness.")
+    
+    return render_template('our_story.html', story_text=story_text)
+
+
+# route for generating invitation card using Replicate API
+@app.route('/generate-invitation', methods=['GET', 'POST'])
+@login_required
+def generate_invitation():
+    image_url = None
+    error = None
+    if request.method == 'POST':
+        prompt = request.form.get('prompt', 'Romantic date night invitation card')
+        try:
+            # Generate a single image using Replicate (Stable Diffusion)
+            output = replicate.run(
+                "prunaai/flux.1-dev:970a966e3a5d8aa9a4bf13d395cf49c975dc4726e359f982fb833f9b100f75d5",
+                input={"prompt": prompt}
+            )
+            # output is a list, but we only want the first image
+            if output and isinstance(output, list) and len(output) > 0:
+                image_url = output[0]
+            else:
+                error = "No image generated. Try a different prompt."
+        except Exception as e:
+            error = f"Error generating image: {str(e)}"
+    return render_template('generate_invitation.html', image_url=image_url, error=error)
 
 if __name__ == "__main__":
     app.run(debug=True)
