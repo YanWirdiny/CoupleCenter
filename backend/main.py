@@ -37,6 +37,7 @@ def get_words(couple_id):
     return words
 
 def add_word(text, couple_id):
+    date_str = datetime.now().strftime("%Y-%m-%d")
     conn = sqlite3.connect(WORDS_DB_PATH)
     c = conn.cursor()
     c.execute('INSERT INTO words (text, couple_id) VALUES (?, ?)', (text, couple_id))

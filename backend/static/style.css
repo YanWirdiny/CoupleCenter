@@ -246,3 +246,83 @@ h1 {
     margin-left: auto;
     margin-right: auto;
 }
+
+.notion-notes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+.notion-note-card {
+  background: linear-gradient(135deg, #f4e2e9 0%, #f9f6ff 100%);
+  border-left: 6px solid #ff6a88;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(255, 106, 136, 0.08), 0 1.5px 4px rgba(0,0,0,0.04);
+  border: 1.5px solid #ffe0ec;
+  min-width: 280px;
+  max-width: 400px;
+  padding: 24px 20px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+  position: relative;
+}
+
+.notion-note-card:hover {
+  box-shadow: 0 8px 32px rgba(255, 106, 136, 0.16), 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.notion-note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.notion-note-date {
+  font-size: 0.95em;
+  color: #bbb;
+  font-style: italic;
+}
+
+.notion-note-date-top {
+  font-size: 0.95em;
+  color: #bbb;
+  font-style: italic;
+  margin-bottom: 6px;
+  align-self: flex-start;
+}
+
+.notion-note-delete {
+  background: linear-gradient(90deg, #ff6a88 0%, #ffb86c 100%);
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.notion-note-delete:hover {
+  background: #ff6a88;
+}
+
+.notion-note-content {
+  font-family: 'Caveat', cursive;
+  font-size: 1.3em;
+  letter-spacing: 0.5px;
+  color: #444;
+  white-space: pre-line;
+  word-break: break-word;
+  margin-top: 8px;
+}
+
+.notion-note-card.empty {
+  text-align: center;
+  color: #ff6a88;
+  background: #fff0f6;
+  border: 1.5px dashed #ffb6c1;
+}
