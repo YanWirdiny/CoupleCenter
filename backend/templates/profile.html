@@ -50,5 +50,20 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="questionModal" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="questionModalLabel" style="color:#ff6a88;">Ask The Question</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="mb-3">Choose who you want to ask:</p>
+        <a href="{{ url_for('ask_girlfriend') }}" class="btn btn-success btn-lg me-2">Ask Girlfriend</a>
+        <a href="{{ url_for('ask_boyfriend') }}" class="btn btn-success btn-lg ms-2">Ask Boyfriend</a>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

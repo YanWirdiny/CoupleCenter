@@ -61,14 +61,22 @@
     const fullText = storyText.textContent;
     storyText.textContent = '';
     let index = 0;
+    let typing = true;
+
     function typeLetter() {
-        if (index < fullText.length) {
+        if (index < fullText.length && typing) {
             storyText.textContent += fullText.charAt(index);
             index++;
-            setTimeout(typeLetter, 50);
+            setTimeout(typeLetter, 20);
         }
     }
     typeLetter();
+
+    // Double-click to show all text instantly
+    storyText.parentElement.addEventListener('dblclick', function() {
+        typing = false;
+        storyText.textContent = fullText;
+    });
 
     // Play/pause audio button
     const audio = document.getElementById('bg-music');
