@@ -257,7 +257,7 @@ def gallery():
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(filepath)
                 add_image(filename, note, couple_id)
-                return redirect(url_for('gallery'))
+                return redirect(url_for('gallery'))  # <--- This is correct!
             else:
                 error = 'Invalid file type.'
     images = get_images(couple_id)
