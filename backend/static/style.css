@@ -326,3 +326,87 @@ h1 {
   background: #fff0f6;
   border: 1.5px dashed #ffb6c1;
 }
+
+.imessage-notes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 32px 0;
+}
+
+.imessage-note-row {
+  display: flex;
+  width: 100%;
+}
+
+.imessage-note-row.me {
+  justify-content: flex-end;
+}
+
+.imessage-note-row.partner {
+  justify-content: flex-start;
+}
+
+/* Partner's message bubble: a more vivid pink */
+.imessage-note-row.partner .imessage-note-card {
+  background: #ffe0ec;
+  color: #444;
+  border-radius: 18px 18px 6px 18px;
+  display: inline-flex;
+  box-shadow: 0 2px 8px rgba(255, 106, 136, 0.12);
+}
+
+/* Your message bubble: a stronger gradient */
+.imessage-note-row.me .imessage-note-card {
+  background: linear-gradient(90deg, #ffb86c 0%, #ff6a88 100%);
+  color: #fff;
+  border-radius: 18px 18px 18px 6px;
+  display: inline-flex;
+  box-shadow: 0 2px 8px rgba(255, 106, 136, 0.18);
+}
+
+/* General card settings */
+.imessage-note-card {
+  max-width: 100%;
+  min-width: 80px;
+  padding: 10px 18px 10px 18px;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  display: inline-flex;
+  flex-direction: column;
+  word-break: break-word;
+  margin-bottom: 2px;
+}
+
+.imessage-note-row.me .imessage-note-card {
+  background: linear-gradient(90deg, #ffb86c 0%, #ff6a88 100%);
+  color: #fff;
+  border-radius: 18px 18px 18px 6px;
+}
+
+.imessage-note-row.partner .imessage-note-card {
+  background: #ffe0ec;
+  color: #444;
+  border-radius: 18px 18px 6px 18px;
+  display: inline-flex;
+  box-shadow: 0 2px 8px rgba(255, 106, 136, 0.12);
+}
+
+.imessage-note-sender {
+  font-size: 0.85em;
+  color: #bbb;
+  font-style: italic;
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+
+.imessage-note-content {
+  font-size: 1.1em;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.delete-form {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

@@ -21,6 +21,7 @@ def init_words_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             text TEXT NOT NULL,
             couple_id INTEGER,
+            sender_email TEXT,
             FOREIGN KEY (couple_id) REFERENCES couples(id)
         )
     ''')
@@ -32,15 +33,15 @@ init_words_db()  # Initialize WordsTogether DB on startup
 def get_words(couple_id):
     conn = sqlite3.connect(WORDS_DB_PATH)
     c = conn.cursor()
-    c.execute('SELECT id, text FROM words WHERE couple_id=? ORDER BY id DESC LIMIT 20', (couple_id,))
+    c.execute('SELECT id, text, sender_email FROM words WHERE couple_id=? ORDER BY id DESC LIMIT 20', (couple_id,))
     words = c.fetchall()
     conn.close()
     return words
 
-def add_word(text, couple_id):
+def add_word(text, couple_id, sender_email):
     conn = sqlite3.connect(WORDS_DB_PATH)
     c = conn.cursor()
-    c.execute('INSERT INTO words (text, couple_id) VALUES (?, ?)', (text, couple_id))
+    c.execute('INSERT INTO words (text, couple_id, sender_email) VALUES (?, ?, ?)', (text, couple_id, sender_email))
     conn.commit()
     conn.close()
 
@@ -275,7 +276,7 @@ def words_together():
             return redirect(url_for('words_together'))
         text = request.form.get('text')
         if text and len(text.strip()) > 0:
-            add_word(text.strip(), couple_id)
+            add_word(text.strip(), couple_id, session['user_email'])
             return redirect(url_for('words_together'))
         else:
             error = 'Text cannot be empty.'
